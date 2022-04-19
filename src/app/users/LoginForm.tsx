@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Modal, Button, Form, Input } from 'antd'
+import { Modal, Button, Form, Input, message } from 'antd'
 import { persistTokenToLocalStorage } from '../../hooks/useAuth'
 
 export const LoginForm = () => {
@@ -27,7 +27,7 @@ export const LoginForm = () => {
 				title="Login to your Account"
 				visible={isModalVisible}
 				onCancel={handleCancel}
-				okText="Register"
+				okText="Login"
 				onOk={() => {
 					form
 						.validateFields()
@@ -41,10 +41,15 @@ export const LoginForm = () => {
 							})
 							if (res.ok) {
 								const data = await res.json()
-								persistTokenToLocalStorage(data.token)
-								form.resetFields()
-								handleOk()
-								window.location.reload()
+								if (data.token) {
+									persistTokenToLocalStorage(data.token)
+									form.resetFields()
+									handleOk()
+									window.location.reload()
+								} else {
+									message.error(data.detail)
+									console.error(data.detail)
+								}
 							}
 						})
 						.catch((info) => {
